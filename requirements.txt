@@ -1,0 +1,8 @@
+streamlit
+pandas
+numpy
+matplotlib
+os
+io
+zipfile
+scipy.signal
