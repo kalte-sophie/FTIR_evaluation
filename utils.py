@@ -26,9 +26,8 @@ def identify_peaks(df, num_peaks, window_size, prominence):
 
 
 
-# Funktion für Strandard Plot
-
-def create_standard_plot(df, peak_indices, peak_positions, peak_values, legend_name, x_min, x_max, y_min, y_max):
+# Funktion für Standard Plot mit Show Peaks Checkbox
+def create_standard_plot(df, peak_indices, peak_positions, peak_values, legend_name, x_min, x_max, y_min, y_max, show_peaks):
     # Sicherheitscheck: konvertiere ggf. zu Listen
     peak_positions = list(peak_positions) if not isinstance(peak_positions, list) else peak_positions
     peak_values = list(peak_values) if not isinstance(peak_values, list) else peak_values
@@ -36,18 +35,20 @@ def create_standard_plot(df, peak_indices, peak_positions, peak_values, legend_n
     fig, ax = plt.subplots(figsize=(10, 5))
     ax.plot(df["Wave number"], df["Transmission"], label=legend_name, color="black", alpha=0.7)
 
-    # Peaks markieren
-    ax.scatter(
-        df["Wave number"].iloc[peak_indices],
-        df["Transmission"].iloc[peak_indices],
-        color="red",
-        s=50,
-        zorder=3,
-        label="Identifizierte Peaks"
-    )
+    # Peaks nur anzeigen, wenn die Checkbox aktiviert ist
+    if show_peaks:
+        # Peaks markieren
+        ax.scatter(
+            df["Wave number"].iloc[peak_indices],
+            df["Transmission"].iloc[peak_indices],
+            color="red",
+            s=7,
+            zorder=3,
+            label="Identifizierte Peaks"
+        )
 
-    for pos, val in zip(peak_positions, peak_values):
-        ax.plot([pos, pos], [0, val], color='red', linestyle='--', alpha=0.5, linewidth=0.5)
+        for pos, val in zip(peak_positions, peak_values):
+            ax.plot([pos, pos], [0, val], color='red', linestyle='--', alpha=0.5, linewidth=0.5)
 
     ax.set_xlabel("Wellenzahl (cm⁻¹)")
     ax.set_ylabel("Transmission (%)")

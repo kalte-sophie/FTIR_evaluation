@@ -62,25 +62,34 @@ if uploaded_file is not None:
         row = st.columns([1, 3])
         row[0].markdown("**Prominenz**")
         row[1].number_input("", min_value=0.05, max_value=2.0, step=0.1, key="prominence", label_visibility="collapsed")
+        
+        show_peaks = col1.checkbox("Peaks anzeigen", value=True)
 
     # Rechte Spalte: Achsen-Einstellungen
     with col2:
         st.markdown("##### Achsen-Einstellungen")
+        
+        # Wenn noch keine Achsenwerte gesetzt sind (beim ersten Laden), setze Standardwerte
+        st.session_state.x_min = st.session_state.get("x_min", default_values["x_min"])
+        st.session_state.x_max = st.session_state.get("x_max", default_values["x_max"])
+        st.session_state.y_min = st.session_state.get("y_min", default_values["y_min"])
+        st.session_state.y_max = st.session_state.get("y_max", default_values["y_max"])
+
         row = st.columns([1, 3])
         row[0].markdown("**X-Min**")
-        row[1].number_input("", step=10, key="x_min", label_visibility="collapsed")
+        row[1].number_input("", step=10, key="x_min", value=st.session_state.x_min, label_visibility="collapsed")
 
         row = st.columns([1, 3])
         row[0].markdown("**X-Max**")
-        row[1].number_input("", step=10, key="x_max", label_visibility="collapsed")
+        row[1].number_input("", step=10, key="x_max", value=st.session_state.x_max, label_visibility="collapsed")
 
         row = st.columns([1, 3])
         row[0].markdown("**Y-Min**")
-        row[1].number_input("", step=1, key="y_min", label_visibility="collapsed")
+        row[1].number_input("", step=1, key="y_min", value=st.session_state.y_min, label_visibility="collapsed")
 
         row = st.columns([1, 3])
         row[0].markdown("**Y-Max**")
-        row[1].number_input("", step=1, key="y_max", label_visibility="collapsed")
+        row[1].number_input("", step=1, key="y_max", value=st.session_state.y_max, label_visibility="collapsed")
 
     # --- Peaks berechnen ---
     peak_positions, peak_values, peaks = identify_peaks(
@@ -96,19 +105,22 @@ if uploaded_file is not None:
     })
 
     # --- Plot ---
-    fig = create_standard_plot(
-        df,
-        peaks,
-        peak_positions,
-        peak_values,
-        st.session_state.legend_name,
-        st.session_state.y_min,
-        st.session_state.y_max,
-        st.session_state.x_min,
-        st.session_state.x_max
-    )
-
-    st.pyplot(fig)
+    col1, col2 = st.columns([1, 2])  # Verhältnis: linke Spalte kleiner
+    with col1:
+        fig = create_standard_plot(
+            df,
+            peaks,
+            peak_positions,
+            peak_values,
+            st.session_state.legend_name,
+            st.session_state.y_min,
+            st.session_state.y_max,
+            st.session_state.x_min,
+            st.session_state.x_max,
+            show_peaks
+        )
+    
+        st.pyplot(fig)
 
     # --- Tabelle der Peaks ---
     st.subheader('Identifizierte Peaks:')
